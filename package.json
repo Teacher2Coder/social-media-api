@@ -1,0 +1,28 @@
+{
+  "name": "social-media-api",
+  "version": "1.0.0",
+  "description": "This is an api that allows a social media platform to function",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "seed": "node utils/seed"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^7.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.9"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Teacher2Coder/social-media-api.git"
+  },
+  "author": "Teacher2Coder",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Teacher2Coder/social-media-api/issues"
+  },
+  "homepage": "https://github.com/Teacher2Coder/social-media-api#readme"
+}
