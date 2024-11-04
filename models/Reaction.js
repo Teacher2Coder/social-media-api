@@ -3,12 +3,13 @@ const { Schema, model } = require('mongoose');
 const reactionSchema = new Schema(
     {
         reactionId: {
-
+            // Mongoose Object ID data type
+            // Default as new ID
         },
         reactionBody: {
             type: String,
             required: true,
-            // Between 1-280 characters
+            maxLength: 280
         },
         createdAt: {
             type: Date,

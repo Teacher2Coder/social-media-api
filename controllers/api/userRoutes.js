@@ -1,12 +1,13 @@
 const router = require('express').Router();
-const { User, Thought, Reaction } = require('../../models');
+const { User, Thought } = require('../../models');
 
 // Get all users
 router.get('/', async (req,res) => {
     try {
         const users = await User.find();
-        res.json(users);
+        res.status(200).json(users);
     } catch (err) {
+        console.error(err);
         res.status(500).json(err);
     }
 });
@@ -22,8 +23,9 @@ router.get('/:id', async (req,res) => {
             return res.status(404).json({ message: 'No user with that ID' });
         }
 
-        res.json(user);
+        res.status(200).json(user);
     } catch (err) {
+        console.error(err);
         res.status(500).json(err);
     }
 });
@@ -32,14 +34,27 @@ router.get('/:id', async (req,res) => {
 router.post('/', async (req, res) => {
     try {
         const user = await User.create(req.body);
-        res.json(user);
+        res.status(200).json(user);
     } catch (err) {
+        console.error(err);
         res.status(500).json(err);
     }
 })
 
 // Update a user
-
+router.put('/:id', async (req, res) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            {  _id: req.params.id },
+            { $set: req.body },
+            { runValidators: true, new: true }
+        );
+        res.status(200).json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(err);
+    }
+});
 
 // Delete a user
 router.delete('/:id', async (req, res) => {
@@ -50,8 +65,11 @@ router.delete('/:id', async (req, res) => {
             return res.status(404).json({ message: 'No user with that ID' });
         }
 
-        res.json(user);
+        await Thought.deleteMany({ _id: { $in: user.thoughts } });
+
+        res.status(200).json(user);
     } catch (err) {
+        console.error(err);
         res.status(500).json(err);
     }
 });
