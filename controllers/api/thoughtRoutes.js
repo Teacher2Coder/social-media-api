@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const { User, Thought, Reaction } = require('../../models');
+const { User, Thought } = require('../../models');
 
 
 // Get all thoughts
@@ -62,11 +62,48 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const thought = await Thought.findOneAndDelete({ _id: req.params.id });
+
+        await User.findOneAndUpdate(
+            { username: thought.username },
+            { $pull: { thoughts: thought._id } }
+        );
+
         res.status(200).json(thought);
     } catch (err) {
         console.error(err);
         res.status(500).json(err);
     }
 });
+
+
+// Add a reaction to a post
+router.post('/:id/reactions', async (req, res) => {
+    try {
+        const thought = await Thought.findOneAndUpdate(
+            { _id: req.params.id },
+            { $push: { reactions: req.body }}
+        );
+        res.status(200).json(thought);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(err);
+    }
+});
+
+
+// Delete a reaction to a post
+router.delete('/:id/reactions', async (req, res) => {
+    try {
+        const thought = await Thought.findOneAndUpdate(
+            { _id: req.params.id },
+            { $pull: { reactions: req.body }}
+        );
+        res.status(200).json(thought);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(err);
+    }
+});
+
 
 module.exports = router;

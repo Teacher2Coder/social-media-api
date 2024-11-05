@@ -39,7 +39,7 @@ router.post('/', async (req, res) => {
         console.error(err);
         res.status(500).json(err);
     }
-})
+});
 
 // Update a user
 router.put('/:id', async (req, res) => {
@@ -49,6 +49,11 @@ router.put('/:id', async (req, res) => {
             { $set: req.body },
             { runValidators: true, new: true }
         );
+
+        if (!user) {
+            return res.status(404).json({ message: 'No user with that ID' });
+        }
+
         res.status(200).json(user);
     } catch (err) {
         console.error(err);
@@ -66,6 +71,46 @@ router.delete('/:id', async (req, res) => {
         }
 
         await Thought.deleteMany({ _id: { $in: user.thoughts } });
+
+        res.status(200).json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(err);
+    }
+});
+
+
+// Add a friend to friend list
+router.post('/:userId/friends/:friendId', async (req, res) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $push: { friends: req.params.friendId }}
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'No user with that ID' });
+        }
+
+        res.status(200).json(user);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json(err);
+    }
+});
+
+
+// Remove a friend from friend list
+router.delete('/:userId/friends/:friendId', async (req, res) => {
+    try {
+        const user = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId }}
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: 'No user with that ID' });
+        }
 
         res.status(200).json(user);
     } catch (err) {

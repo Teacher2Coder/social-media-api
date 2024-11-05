@@ -1,3 +1,6 @@
+const connection = require('../config/connection')
+connection.on('error', (err) => err);
+
 const User = require('../models/User');
 const Thought = require('../models/Thought');
 
@@ -6,24 +9,27 @@ const thoughtData = require('./thoughtData.json');
 
 console.log('Now seeding database');
 
-User.find({})
-    .exec()
-    .then( async collection => {
-        if (collection.length === 0) {
-            const results = await User.insertMany(userData);
-            return console.log('Users seeded', results);
-        }
-        return console.log('Already seeded');
-    })
-    .catch(err => console.error(err));
+connection.once('open', async () => {
+    console.log('Connected to database');
 
-Thought.find({})
-    .exec()
-    .then( async collection => {
-        if (collection.length === 0) {
-            const results = await Thought.insertMany(thoughtData);
-            return console.log('Users seeded', results);
-        }
-        return console.log('Already seeded');
-    })
-    .catch(err => console.error(err));
+    console.info('Now seeding database!');
+
+    let userCheck = await connection.db.listCollections({ name: 'users' }).toArray();
+    if (userCheck.length) {
+        await connection.dropCollection('users');
+    }
+
+    let thoughtCheck = await connection.db.listCollections({ name: 'thoughts' }).toArray();
+    if (thoughtCheck.length) {
+        await connection.dropCollection('thoughts');
+    }
+
+    await User.collection.insertMany(userData);
+    await Thought.collection.insertMany(thoughtData);
+
+    console.table(userData);
+    console.table(thoughtData);
+
+    console.info('Database has been seeded!');
+    process.exit(0);
+});

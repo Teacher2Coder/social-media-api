@@ -11,7 +11,7 @@ const userSchema = new Schema(
             type: String,
             unique: true,
             required: true,
-            trim: true
+            trim: true,
         },
         email: {
             type: String,
@@ -19,19 +19,19 @@ const userSchema = new Schema(
             lowercase: true,
             unique: true,
             required: true,
-            validate: [validateEmail, 'Please enter a valid email']
+            validate: [validateEmail, 'Please enter a valid email'],
         },
         thoughts: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'thoughts',
-            }
+            },
         ],
         friends: [
             {
                 type: Schema.Types.ObjectId,
                 ref: 'user',
-            }
+            },
         ]
     },
     {
